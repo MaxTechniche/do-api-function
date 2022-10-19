@@ -49,11 +49,5 @@ async def read_items(token: str = Depends(oauth2_scheme)):
     data = get_data()
     return data
 
-@app.get("/<query>")
-async def send_query(token: str = Depends(oauth2_scheme)):
-    if not token_authorized(token):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
-
-    data = get_data(query)
 
 uvicorn.run("__main__:app", host="localhost", port=8000)
