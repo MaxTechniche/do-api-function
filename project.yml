@@ -1,0 +1,5 @@
+packages:
+  - name: database-api-endpoint
+    actions:
+      - name: database-api-endpoint
+        runtime: "python:default"
