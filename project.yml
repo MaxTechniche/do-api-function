@@ -1,5 +1,5 @@
 packages:
-  - name: database-api-endpoint
+  - name: do-api-function
     actions:
-      - name: database-api-endpoint
+      - name: do-api-function
         runtime: "python:default"
