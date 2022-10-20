@@ -1,5 +1,0 @@
-packages:
-  - name: api-func
-    actions:
-      - name: api-func
-        runtime: "python:default"
