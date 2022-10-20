@@ -1,7 +1,7 @@
 import uvicorn
 import os
 import dotenv
-import ibis
+import psycopg2
 from requests import get
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -31,15 +31,19 @@ def token_authorized(token):
 
 
 def get_data():
-    conn = ibis.postgres.connect(
+    conn = psycopg2.connect(
         database=settings.POSTGRES_DB,
         host=settings.POSTGRES_HOST,
         user=settings.POSTGRES_USER,
         password=settings.POSTGRES_PASSWORD,
         port=settings.POSTGRES_PORT,
     )
-    data = conn.list_tables()
-    return {"Tables": data}
+    query = settings.DATABASE_QUERY
+    cur.execute(query)
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    return {"data": data}
 
 def main(args=None):
     @app.get("/")
