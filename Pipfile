@@ -10,6 +10,7 @@ python-dotenv = "*"
 sqlalchemy = "*"
 ibis-framework = {extras = ["postgres"], version = "*"}
 psycopg2 = "*"
+gunicorn = "*"
 
 [dev-packages]
 black = "*"

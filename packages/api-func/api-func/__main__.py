@@ -5,9 +5,7 @@ import ibis
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from sqlalchemy import create_engine
-
-dotenv.load_dotenv("./.env")
+dotenv.load_dotenv()
 
 app = FastAPI()
 
@@ -41,14 +39,17 @@ def get_data():
     data = conn.list_tables()
     return {"Tables": data}
 
+def main(args=None):
+    @app.get("/")
+    def read_items(token: str = Depends(oauth2_scheme)):
+        if not token_authorized(token):
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
-@app.get("/")
-async def read_items(token: str = Depends(oauth2_scheme)):
-    if not token_authorized(token):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
-
-    data = get_data()
-    return data
+        data = get_data()
+        return data
 
 
-uvicorn.run("__main__:app", host="localhost", port=8000)
+    uvicorn.run("__main__:app", port=8000)
+
+if __name__ == "__main__":
+    main()
