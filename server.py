@@ -21,6 +21,7 @@ class SETTINGS:
     POSTGRES_PORT: str = os.getenv("port")
     POSTGRES_DB: str = os.getenv("database")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+    DATABASE_QUERY: str = os.getenv("QUERY")
 
 
 settings = SETTINGS()
@@ -39,30 +40,25 @@ def get_data():
         port=settings.POSTGRES_PORT,
     )
     query = settings.DATABASE_QUERY
+    cur = conn.cursor()
     cur.execute(query)
     data = cur.fetchall()
     cur.close()
     conn.close()
     return {"data": data}
 
-def main(args=None):
-    @app.get("/")
-    async def read_items(token: str = Depends(oauth2_scheme)):
-        if not token_authorized(token):
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+@app.get("/")
+async def read_items(token: str = Depends(oauth2_scheme)):
+    if not token_authorized(token):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
-        data = get_data()
-        return data
+    data = get_data()
+    return data
 
-    @app.get("/ip")
-    async def get_ip(token: str = Depends(oauth2_scheme)):
-        if not token_authorized(token):
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+@app.get("/ip")
+async def get_ip(token: str = Depends(oauth2_scheme)):
+    if not token_authorized(token):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
-        ip = get('https://api.ipify.org').content.decode('utf8')
-        return {"The IP address for this function is": ip}
-
-    uvicorn.run("__main__:app", port=8000)
-
-if __name__ == "__main__":
-    main()
+    ip = get('https://api.ipify.org').content.decode('utf8')
+    return {"The IP address for this function is": ip}
