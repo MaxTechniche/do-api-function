@@ -1,0 +1,8 @@
+name: do-api-function
+services:
+  - environment_slug: python
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: MaxTechniche/do-api-function
+    name: do-api-function
