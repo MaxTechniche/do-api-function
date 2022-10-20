@@ -2,6 +2,8 @@ import uvicorn
 import os
 import dotenv
 import ibis
+from requests import get
+
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
@@ -41,13 +43,20 @@ def get_data():
 
 def main(args=None):
     @app.get("/")
-    def read_items(token: str = Depends(oauth2_scheme)):
+    async def read_items(token: str = Depends(oauth2_scheme)):
         if not token_authorized(token):
             raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
         data = get_data()
         return data
 
+    @app.get("/ip")
+    async def get_ip(token: str = Depends(oauth2_scheme)):
+        if not token_authorized(token):
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+
+        ip = get('https://api.ipify.org').content.decode('utf8')
+        return {"The IP address for this function is": ip}
 
     uvicorn.run("__main__:app", port=8000)
 

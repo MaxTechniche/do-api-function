@@ -1,5 +1,5 @@
 packages:
-  - name: do-api-function
+  - name: api-func
     actions:
-      - name: do-api-function
+      - name: api-func
         runtime: "python:default"

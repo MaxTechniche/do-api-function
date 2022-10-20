@@ -11,6 +11,7 @@ sqlalchemy = "*"
 ibis-framework = {extras = ["postgres"], version = "*"}
 psycopg2 = "*"
 gunicorn = "*"
+requests = "*"
 
 [dev-packages]
 black = "*"
