@@ -38,7 +38,8 @@ def get_data():
         password=settings.POSTGRES_PASSWORD,
         port=settings.POSTGRES_PORT,
     )
-    return {"Tables": conn.list_tables()}
+    data = conn.list_tables()
+    return {"Tables": data}
 
 
 @app.get("/")
