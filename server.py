@@ -32,29 +32,20 @@ def token_authorized(token):
 
 
 def get_data():
-    data = None
-    error = None
-    try:
-        conn = psycopg2.connect(
-            database=settings.POSTGRES_DB,
-            host=settings.POSTGRES_HOST,
-            user=settings.POSTGRES_USER,
-            password=settings.POSTGRES_PASSWORD,
-            port=settings.POSTGRES_PORT,
-        )
-        query = settings.DATABASE_QUERY
-        with conn:
-            with conn.cursor() as curs:
-                curs.execute(query)
-                data = curs.fetchall()
-        if not data:
-            error = "Unkown db error"
-        return {"data": data, "error": error}
-    finally:
-        conn.close()
-        if not data:
-            return {"data": None, "error": "Error with connection to db"}
-        
+    conn = psycopg2.connect(
+        database=settings.POSTGRES_DB,
+        host=settings.POSTGRES_HOST,
+        user=settings.POSTGRES_USER,
+        password=settings.POSTGRES_PASSWORD,
+        port=settings.POSTGRES_PORT,
+    )
+    query = settings.DATABASE_QUERY
+    cur = conn.cursor()
+    cur.execute(query)
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    return {"data": data}
 
 @app.get("/")
 async def read_items(token: str = Depends(oauth2_scheme)):
