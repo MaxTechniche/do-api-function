@@ -61,5 +61,4 @@ async def get_ip(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
     external_ip = urllib.request.urlopen('https://v4.ident.me').read().decode('utf8')
-
-    return {"data": external_ip, "error": "ip request"}
+    return {"The IP address for this function is": external_ip}
