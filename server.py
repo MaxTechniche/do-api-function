@@ -2,7 +2,7 @@ import uvicorn
 import os
 import dotenv
 import psycopg2
-import urllib.request
+from requests import get
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -15,20 +15,20 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="localhost")
 
 
 class SETTINGS:
-    POSTGRES_USER: str = os.getenv("USER")
-    POSTGRES_PASSWORD = os.getenv("PASSWORD")
-    POSTGRES_HOST: str = os.getenv("HOST")
-    POSTGRES_PORT: str = os.getenv("PORT")
-    POSTGRES_DB: str = os.getenv("DATABASE")
+    POSTGRES_USER: str = os.getenv("user")
+    POSTGRES_PASSWORD = os.getenv("password")
+    POSTGRES_HOST: str = os.getenv("host")
+    POSTGRES_PORT: str = os.getenv("port")
+    POSTGRES_DB: str = os.getenv("database")
+    DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
     DATABASE_QUERY: str = os.getenv("QUERY")
-    TOKEN: str = os.getenv("TOKEN")
 
 
 settings = SETTINGS()
 
 
 def token_authorized(token):
-    return token == settings.TOKEN
+    return token == os.environ.get("TOKEN")
 
 
 def get_data():
@@ -60,5 +60,5 @@ async def get_ip(token: str = Depends(oauth2_scheme)):
     if not token_authorized(token):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
-    external_ip = urllib.request.urlopen('https://v4.ident.me').read().decode('utf8')
-    return {"The IP address for this function is": external_ip}
+    ip = get('https://api.ipify.org').content.decode('utf8')
+    return {"The IP address for this function is": ip}
