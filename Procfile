@@ -1,1 +1,1 @@
-web: gunicorn server:app -k uvicorn.workers.UvicornWorker
+web: gunicorn server:app -k uvicorn.workers.UvicornWorker --log-level debug -b :8080
