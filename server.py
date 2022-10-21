@@ -32,6 +32,8 @@ def token_authorized(token):
 
 
 def get_data():
+    data = None
+    error = None
     try:
         conn = psycopg2.connect(
             database=settings.POSTGRES_DB,
@@ -41,15 +43,16 @@ def get_data():
             port=settings.POSTGRES_PORT,
         )
         query = settings.DATABASE_QUERY
-        cur = conn.cursor()
-        cur.execute(query)
-        data = cur.fetchall()
-        return {"data": data, "error": None}
+        with conn:
+            with conn.cursor() as curs:
+                curs.execute(query)
+                data = curs.fetchall()
+        if not data:
+            error = "Unkown db error"
+        return {"data": data, "error": error}
     finally:
-        try:
-            cur.close()
-            conn.close()
-        except UnboundLocalError:
+        conn.close()
+        if not data:
             return {"data": None, "error": "Error with connection to db"}
         
 
@@ -66,6 +69,6 @@ async def get_ip(token: str = Depends(oauth2_scheme)):
     if not token_authorized(token):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
-    external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
+    external_ip = urllib.request.urlopen('https://v4.ident.me').read().decode('utf8')
 
     return {"data": external_ip, "error": "ip request"}
